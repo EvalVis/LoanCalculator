@@ -94,16 +94,19 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
-		// Language selection radio buttons
+		// Language selection radio buttons - positioned at the very top
 		ltRadio = new JRadioButton("Lietuvių");
 		enRadio = new JRadioButton("English");
-		ltRadio.setBounds(10, 10, 80, 20);
-		enRadio.setBounds(100, 10, 80, 20);
+		ltRadio.setBounds(10, 5, 80, 20);
+		enRadio.setBounds(100, 5, 80, 20);
 		ButtonGroup langGroup = new ButtonGroup();
 		langGroup.add(ltRadio);
 		langGroup.add(enRadio);
 		contentPane.add(ltRadio);
 		contentPane.add(enRadio);
+		// Set higher Z-order to ensure they stay on top
+		contentPane.setComponentZOrder(ltRadio, 0);
+		contentPane.setComponentZOrder(enRadio, 0);
 		if (Loan.currentLocale.getLanguage().equals("lt")) {
 			ltRadio.setSelected(true);
 		} else {
@@ -162,7 +165,8 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 	    		createDataset(monthlyLoan, monthlyInterest, monthlyTotal, leftToPay, month1, month2), 
 	    		PlotOrientation.VERTICAL, true, true, false);     
 	    ChartPanel panel = new ChartPanel(chart);
-	    panel.setSize(560, 367);
+	    panel.setBounds(10, 30, 550, 370);
+	    panel.setSize(550, 370);
 	    XYPlot plot = chart.getXYPlot();
 	    renderer = new XYLineAndShapeRenderer();
 	    renderer.setSeriesPaint(0, Color.RED);
@@ -178,7 +182,7 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 	    renderer.setSeriesVisible(1, true);
 	    renderer.setSeriesVisible(2, true);
 	    renderer.setSeriesVisible(3, true);
-	    contentPane.add(panel, BorderLayout.WEST);
+	    contentPane.add(panel);
    }
    
    private XYDataset createDataset(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTotal, double[] leftToPay, int month1, int month2) {
@@ -214,12 +218,12 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 	   box1.setText(Loan.messages.getString("interest"));
 	   box2.setText(Loan.messages.getString("total"));
 	   box3.setText(Loan.messages.getString("left"));
-	   
+    
 	   // Update chart title and axis labels
 	   chart.setTitle(Loan.messages.getString("loan_calculator"));
 	   chart.getXYPlot().getDomainAxis().setLabel(Loan.messages.getString("month"));
 	   chart.getXYPlot().getRangeAxis().setLabel(Loan.messages.getString("total"));
-	   
+    
 	   // Update dataset with new localized series names
 	   XYPlot plot = chart.getXYPlot();
 	   XYSeriesCollection dataset = (XYSeriesCollection) plot.getDataset();
