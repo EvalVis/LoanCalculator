@@ -150,7 +150,7 @@ public class Screen extends JFrame {
 		choice1.setSelectedIndex(months - 1);
 		
 		button = new JButton(Loan.messages.getString("save"));
-		button.addActionListener(e -> new Printer(textField.getText(), getSelectedData(choice, choice1)));
+		button.addActionListener(e -> new Printer(textField.getText() + ".txt", getSelectedData(choice, choice1)));
 		button.setBounds(533, 330, 107, 23);
 		panel.add(button);
 		

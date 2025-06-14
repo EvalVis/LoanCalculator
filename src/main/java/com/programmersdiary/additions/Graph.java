@@ -29,6 +29,7 @@ import javax.swing.ButtonGroup;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.awt.Component;
 
 /**
  * Uses JFreeChart library to draw XY graph.
@@ -47,6 +48,12 @@ public class Graph extends JFrame {
 	private JRadioButton enRadio;
 	private Button button;
 	private JCheckBox box, box1, box2, box3;
+	private final double[] monthlyLoan;
+	private final double[] monthlyInterest;
+	private final double[] monthlyTotal;
+	private final double[] leftToPay;
+	private final int month1;
+	private final int month2;
 	
 	/**
 	 * 
@@ -55,6 +62,12 @@ public class Graph extends JFrame {
 	 */
 	
 public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTotal, double[] leftToPay, int month1, int month2) {
+	this.monthlyLoan = monthlyLoan;
+	this.monthlyInterest = monthlyInterest;
+	this.monthlyTotal = monthlyTotal;
+	this.leftToPay = leftToPay;
+	this.month1 = month1;
+	this.month2 = month2;
 	createContentPane();
 	setFrame();
 	createChart(monthlyLoan, monthlyInterest, monthlyTotal, leftToPay, month1, month2);
@@ -110,7 +123,7 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 		
 		button = new Button(Loan.messages.getString("save"));
 		button.setFont(new Font("Times New Roman", Font.PLAIN, 12));
-		button.addActionListener(e -> new Printer(textField.getText(), 1000, 1000, chart));
+		button.addActionListener(e -> new Printer(textField.getText() + ".png", 1000, 1000, chart));
 		button.setBounds(379, 452, 164, 22);
 		contentPane.add(button);
 		
@@ -202,9 +215,19 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 	   box2.setText(Loan.messages.getString("total"));
 	   box3.setText(Loan.messages.getString("left"));
 	   
-	   // Update chart title and axis labels
-	   chart.setTitle(Loan.messages.getString("loan_calculator"));
-	   chart.getXYPlot().getDomainAxis().setLabel(Loan.messages.getString("month"));
-	   chart.getXYPlot().getRangeAxis().setLabel(Loan.messages.getString("total"));
+	   // Remove the old chart panel
+	   for (Component comp : contentPane.getComponents()) {
+	       if (comp instanceof ChartPanel) {
+	           contentPane.remove(comp);
+	           break;
+	       }
+	   }
+	   
+	   // Recreate chart with new localized strings
+	   createChart(monthlyLoan, monthlyInterest, monthlyTotal, leftToPay, month1, month2);
+	   
+	   // Refresh the display
+	   contentPane.revalidate();
+	   contentPane.repaint();
    }
 }
