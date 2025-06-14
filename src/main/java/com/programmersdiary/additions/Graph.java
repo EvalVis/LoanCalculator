@@ -215,19 +215,17 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 	   box2.setText(Loan.messages.getString("total"));
 	   box3.setText(Loan.messages.getString("left"));
 	   
-	   // Remove the old chart panel
-	   for (Component comp : contentPane.getComponents()) {
-	       if (comp instanceof ChartPanel) {
-	           contentPane.remove(comp);
-	           break;
-	       }
-	   }
+	   // Update chart title and axis labels
+	   chart.setTitle(Loan.messages.getString("loan_calculator"));
+	   chart.getXYPlot().getDomainAxis().setLabel(Loan.messages.getString("month"));
+	   chart.getXYPlot().getRangeAxis().setLabel(Loan.messages.getString("total"));
 	   
-	   // Recreate chart with new localized strings
-	   createChart(monthlyLoan, monthlyInterest, monthlyTotal, leftToPay, month1, month2);
-	   
-	   // Refresh the display
-	   contentPane.revalidate();
-	   contentPane.repaint();
+	   // Update dataset with new localized series names
+	   XYPlot plot = chart.getXYPlot();
+	   XYSeriesCollection dataset = (XYSeriesCollection) plot.getDataset();
+	   dataset.getSeries(0).setKey(Loan.messages.getString("principal"));
+	   dataset.getSeries(1).setKey(Loan.messages.getString("interest"));
+	   dataset.getSeries(2).setKey(Loan.messages.getString("total"));
+	   dataset.getSeries(3).setKey(Loan.messages.getString("left"));
    }
 }
