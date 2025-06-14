@@ -6,7 +6,7 @@
 
     <groupId>com.programmersdiary</groupId>
     <artifactId>loan-calculator</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -30,6 +30,7 @@
     </dependencies>
 
     <build>
+        <finalName>loan-calculator</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
