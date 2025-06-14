@@ -1,11 +1,11 @@
-package main.utils;
+package com.programmersdiary.utils;
 
-import java.awt.Choice;
+import javax.swing.JComboBox;
 
 public class Misc {
 	
 	/**
-	 * Used to allow Lithuanian standarts.
+	 * Used to allow Lithuanian standards.
 	 * @param text - search for dots and replaces them with commas.
 	 * @return - text without dots and possibly with commas.
 	 */
@@ -30,10 +30,10 @@ public class Misc {
 	}
 	
 	/**
-	 * used with Choice. Sets the months in correct order.
+	 * used with JComboBox. Sets the months in correct order.
 	 */
 	
-	public static int[] getMonthOrder(Choice choice, Choice choice1) {
+	public static int[] getMonthOrder(JComboBox<String> choice, JComboBox<String> choice1) {
 		int firstMonth;
 		int secondMonth;
 		if(choice.getSelectedIndex() > choice1.getSelectedIndex()) {
@@ -44,8 +44,7 @@ public class Misc {
 			firstMonth = choice.getSelectedIndex();
 			secondMonth = choice1.getSelectedIndex();
 		}
-		int[] order = {firstMonth, secondMonth};
-		return order;
+        return new int[]{firstMonth, secondMonth};
 	}
 	
 	/**
@@ -54,7 +53,7 @@ public class Misc {
 	
 	public static double[] changeWithDuplicates(double[] data, double duplicate, int firstPosition, int lastPosition, int newLenght) {
 		double[] result = new double[newLenght];
-		for(int i = 0; i < firstPosition; i++) result[i] = data[i];
+        if (firstPosition >= 0) System.arraycopy(data, 0, result, 0, firstPosition);
 		for(int i = firstPosition; i < lastPosition; i++) result[i] = duplicate;
 		int r = 0;
 		for(int i = lastPosition; i < newLenght; i++) {

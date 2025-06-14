@@ -1,4 +1,6 @@
-package main;
+package com.programmersdiary;
+
+import java.util.Arrays;
 
 /**
  * Used to form a loan statistics, from priciple (principle is loan in this program),
@@ -24,15 +26,11 @@ public class Calculator {
 		double[] leftToPay = new double[months];
 		for(int i = 0; i < months; i++) {
 			monthlyInterest[i] = (loan - monthlyLoan * i) * interest * 0.01 / months;
-			//monthlyTotal[i] = monthlyLoan + monthlyInterest[i];
-			//if(loan - monthlyLoan * (i+1) <= 0) leftToPay[i] = 0;
 			leftToPay[i] = loan - monthlyLoan * (i+1);
 		}
 		double[] mLoan = new double[months];
-		for(int i = 0; i < months; i++) mLoan[i] = monthlyLoan;
-		double[][] result = round(mLoan, monthlyInterest, monthlyTotal, leftToPay, months);
-		return result;
-		//new Screen(monthlyLoan, monthlyInterest, monthlyTotal, leftToPay, months);
+        Arrays.fill(mLoan, monthlyLoan);
+        return round(mLoan, monthlyInterest, monthlyTotal, leftToPay, months);
 	}
 	
 	/**
@@ -61,28 +59,26 @@ public class Calculator {
 			monthlyLoan[i] = monthlyTotal - monthlyInterest[i];
 			loanLeft -= monthlyLoan[i];
 			leftToPay[i] = loanLeft;
-			//loanLeft = Math.round(loanLeft * 100) / 100.0;
 		}
 		double[] mTotal = new double[months];
-		for(int i = 0; i < months; i++) mTotal[i] = monthlyTotal;
-		double[][] result = round(monthlyLoan, monthlyInterest, mTotal, leftToPay, months);
-		return result;
-		//new Screen(monthlyLoan, monthlyInterest, monthlyTotal, leftToPay, months);
+        Arrays.fill(mTotal, monthlyTotal);
+        return round(monthlyLoan, monthlyInterest, mTotal, leftToPay, months);
 	}
 	
 	/**
 	 * Round with 2 positions after separator precision.
 	 */
 	
-	private static double[][] round(double monthlyLoan[], double[] monthlyInterest, double[] monthlyTotal, double[] leftToPay, int months) {
+	private static double[][] round(
+			double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTotal, double[] leftToPay, int months
+	) {
 		for(int i = 0; i < months; i++) {
 			monthlyLoan[i] = Math.round(monthlyLoan[i] * 100) / 100.0;
 			monthlyInterest[i] = Math.round(monthlyInterest[i] * 100) / 100.0;
 			monthlyTotal[i] = Math.round((monthlyLoan[i] + monthlyInterest[i]) * 100) / 100.0;
 			leftToPay[i] = Math.round(leftToPay[i] * 100) / 100.0;
 		}
-		double[][] result = {monthlyLoan, monthlyInterest, monthlyTotal, leftToPay};
-		return result;
+        return new double[][]{monthlyLoan, monthlyInterest, monthlyTotal, leftToPay};
 	}
 	
 	/**
@@ -91,8 +87,7 @@ public class Calculator {
 	 */
 	
 	public static int sumMonths(String text) {
-		// first check the maturity.
-		String t[] = text.split(" ");
+		String[] t = text.split(" ");
 		return 12 * Integer.parseInt(t[0]) + Integer.parseInt(t[1]);
 	}
 	
@@ -102,7 +97,6 @@ public class Calculator {
 		double totalTotal = 0;
 		
 		for(int i = 0; i < monthlyLoan.length; i++) {
-			//System.out.println(totalLoan + " " + Math.round(monthlyLoan[i] * 100) / 100.0);
 			totalLoan += monthlyLoan[i];
 			totalInterest += monthlyInterest[i];
 			totalTotal += (monthlyLoan[i] + monthlyInterest[i]);
@@ -110,8 +104,7 @@ public class Calculator {
 		totalLoan = Math.round(totalLoan * 100) / 100.0;
 		totalInterest = Math.round(totalInterest * 100) / 100.0;
 		totalTotal = Math.round(totalTotal * 100) / 100.0;
-		double[] result = {totalLoan, totalInterest, totalTotal};
-		return result;
+        return new double[]{totalLoan, totalInterest, totalTotal};
 		
 	}
 

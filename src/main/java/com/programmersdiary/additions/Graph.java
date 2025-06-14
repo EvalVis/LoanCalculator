@@ -1,18 +1,4 @@
-package main.additions;
-
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
+package com.programmersdiary.additions;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -25,6 +11,25 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Font;
+import java.io.Serial;
+import com.programmersdiary.Loan;
+import com.programmersdiary.additions.Printer;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+import java.awt.event.ActionListener;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 /**
  * Uses JFreeChart library to draw XY graph.
  * @author Evaldas
@@ -32,13 +37,16 @@ import org.jfree.ui.RefineryUtilities;
  */
 public class Graph extends JFrame {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private final int width = 576;
-	private final int height = 500;
-	private JTextField textField;
+    private JTextField textField;
 	private JFreeChart chart;
 	private XYLineAndShapeRenderer renderer;
+	private JRadioButton ltRadio;
+	private JRadioButton enRadio;
+	private Button button;
+	private JCheckBox box, box1, box2, box3;
 	
 	/**
 	 * 
@@ -64,63 +72,72 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    setVisible(true);
 	    RefineryUtilities.centerFrameOnScreen(this);
-	    setSize(width, height);
+       int height = 530;
+       int width = 576;
+       setSize(width, height);
 		textField = new JTextField();
 		textField.setFont(new Font("Times New Roman", Font.PLAIN, 12));
-		textField.setBounds(53, 424, 300, 20);
+		textField.setBounds(53, 454, 300, 20);
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
-		Button button = new Button("Išsaugoti");
-		button.setFont(new Font("Times New Roman", Font.PLAIN, 12));
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new Printer(textField.getText(), 1000, 1000, chart);
+		// Language selection radio buttons
+		ltRadio = new JRadioButton("Lietuvių");
+		enRadio = new JRadioButton("English");
+		ltRadio.setBounds(10, 10, 80, 20);
+		enRadio.setBounds(100, 10, 80, 20);
+		ButtonGroup langGroup = new ButtonGroup();
+		langGroup.add(ltRadio);
+		langGroup.add(enRadio);
+		contentPane.add(ltRadio);
+		contentPane.add(enRadio);
+		if (Loan.currentLocale.getLanguage().equals("lt")) {
+			ltRadio.setSelected(true);
+		} else {
+			enRadio.setSelected(true);
+		}
+		ActionListener langListener = e -> {
+			if (ltRadio.isSelected()) {
+				Loan.currentLocale = new Locale("lt");
+			} else {
+				Loan.currentLocale = new Locale("en");
 			}
-		});
-		button.setBounds(379, 422, 164, 22);
+			Loan.messages = ResourceBundle.getBundle("messages", Loan.currentLocale);
+			updateTexts();
+		};
+		ltRadio.addActionListener(langListener);
+		enRadio.addActionListener(langListener);
+		
+		button = new Button(Loan.messages.getString("save"));
+		button.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+		button.addActionListener(e -> new Printer(textField.getText(), 1000, 1000, chart));
+		button.setBounds(379, 452, 164, 22);
 		contentPane.add(button);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(53, 378, 490, 36);
+		panel.setBounds(53, 408, 490, 36);
 		contentPane.add(panel);
 		
-		JCheckBox box = new JCheckBox("Skola");
-		box.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				changeVisibility(0);
-			}
-		});
+		box = new JCheckBox(Loan.messages.getString("principal"));
+		box.addActionListener(e -> changeVisibility(0));
 		box.setSelected(true);
 		box.setFont(new Font("Times New Roman", Font.PLAIN, 12));
 		panel.add(box);
 		
-		JCheckBox box1 = new JCheckBox("Palūkanos");
-		box1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				changeVisibility(1);
-			}
-		});
+		box1 = new JCheckBox(Loan.messages.getString("interest"));
+		box1.addActionListener(e -> changeVisibility(1));
 		box1.setSelected(true);
 		box1.setFont(new Font("Times New Roman", Font.PLAIN, 12));
 		panel.add(box1);
 		
-		JCheckBox box2 = new JCheckBox("Viso");
-		box2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				changeVisibility(2);
-			}
-		});
+		box2 = new JCheckBox(Loan.messages.getString("total"));
+		box2.addActionListener(e -> changeVisibility(2));
 		box2.setSelected(true);
 		box2.setFont(new Font("Times New Roman", Font.PLAIN, 12));
 		panel.add(box2);
 		
-		JCheckBox box3 = new JCheckBox("Liko");
-		box3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				changeVisibility(3);
-			}
-		});
+		box3 = new JCheckBox(Loan.messages.getString("left"));
+		box3.addActionListener(e -> changeVisibility(3));
 		box3.setSelected(true);
 		box3.setFont(new Font("Times New Roman", Font.PLAIN, 12));
 		panel.add(box3);
@@ -128,7 +145,7 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
    }
 
    private void createChart(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTotal, double[] leftToPay, int month1, int month2) {
-	    chart = ChartFactory.createXYLineChart("Paskola", "Mėnuo", "Vertė", 
+	    chart = ChartFactory.createXYLineChart(Loan.messages.getString("loan_calculator"), Loan.messages.getString("month"), Loan.messages.getString("total"), 
 	    		createDataset(monthlyLoan, monthlyInterest, monthlyTotal, leftToPay, month1, month2), 
 	    		PlotOrientation.VERTICAL, true, true, false);     
 	    ChartPanel panel = new ChartPanel(chart);
@@ -148,25 +165,21 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
 	    renderer.setSeriesVisible(1, true);
 	    renderer.setSeriesVisible(2, true);
 	    renderer.setSeriesVisible(3, true);
-	   // setContentPane(panel);
 	    contentPane.add(panel, BorderLayout.WEST);
    }
    
    private XYDataset createDataset(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTotal, double[] leftToPay, int month1, int month2) {
-	  int r = 0;
-      XYSeries loan = new XYSeries("Skola");
-      XYSeries interest = new XYSeries("Palūkanos");
-      XYSeries total = new XYSeries("Viso");
-      XYSeries left = new XYSeries("Liko");
+      XYSeries loan = new XYSeries(Loan.messages.getString("principal"));
+      XYSeries interest = new XYSeries(Loan.messages.getString("interest"));
+      XYSeries total = new XYSeries(Loan.messages.getString("total"));
+      XYSeries left = new XYSeries(Loan.messages.getString("left"));
       for(int i = month1; i < month2 + 1; i++) {
-    	  loan.add(i+1, monthlyLoan[r]);
-    	  interest.add(i+1, monthlyInterest[r]);
-    	  total.add(i + 1, monthlyTotal[r]);
-    	  left.add(i + 1, leftToPay[r]);
-    	  r++;
+    	  loan.add(i+1, monthlyLoan[i]);
+    	  interest.add(i+1, monthlyInterest[i]);
+    	  total.add(i + 1, monthlyTotal[i]);
+    	  left.add(i + 1, leftToPay[i]);
       }
-      r = 0;
-      XYSeriesCollection dataset = new XYSeriesCollection();
+       XYSeriesCollection dataset = new XYSeriesCollection();
       dataset.addSeries(loan);          
       dataset.addSeries(interest);
       dataset.addSeries(total);
@@ -180,5 +193,18 @@ public Graph(double[] monthlyLoan, double[] monthlyInterest, double[] monthlyTot
    
    private void changeVisibility(int number) {
 	   renderer.setSeriesVisible(number, !renderer.getSeriesVisible(number));
+   }
+
+   private void updateTexts() {
+	   button.setLabel(Loan.messages.getString("save"));
+	   box.setText(Loan.messages.getString("principal"));
+	   box1.setText(Loan.messages.getString("interest"));
+	   box2.setText(Loan.messages.getString("total"));
+	   box3.setText(Loan.messages.getString("left"));
+	   
+	   // Update chart title and axis labels
+	   chart.setTitle(Loan.messages.getString("loan_calculator"));
+	   chart.getXYPlot().getDomainAxis().setLabel(Loan.messages.getString("month"));
+	   chart.getXYPlot().getRangeAxis().setLabel(Loan.messages.getString("total"));
    }
 }

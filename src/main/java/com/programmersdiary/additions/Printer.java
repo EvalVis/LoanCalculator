@@ -1,14 +1,14 @@
-package main.additions;
+package com.programmersdiary.additions;
+
+import com.programmersdiary.utils.InputError;
+import org.jfree.chart.JFreeChart;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import main.utils.Error;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 
@@ -23,8 +23,8 @@ public class Printer {
 	 * @param data - String[] to write.
 	 */
 	
-	public Printer(String path, String data[]) {
-		Error.clear();
+	public Printer(String path, String[] data) {
+		InputError.clear();
 		File file = createFile(path);
 		if(file != null) write(path, data);
 	}
@@ -38,19 +38,20 @@ public class Printer {
 	 */
 	
 	public Printer(String path, int width, int height, JFreeChart chart) {
-		Error.clear();
+		InputError.clear();
 		File file = createFile(path);
 		if(file != null) saveChart(file, width, height, chart);
 	}
 	
 	private void saveChart(File file, int width, int height, JFreeChart chart) {
-			try {
-				ChartUtilities.saveChartAsPNG(file, chart, width, height);
-			} catch (IOException e) {
-				e.printStackTrace();
-				Error.addError(Error.e10);
-				new Error();
-			}
+		try {
+			BufferedImage image = chart.createBufferedImage(width, height);
+			ImageIO.write(image, "png", file);
+		} catch (IOException e) {
+			e.printStackTrace();
+			InputError.addError("er_file_save");
+			new InputError();
+		}
 	}
 	
 	private File createFile(String path) {
@@ -59,24 +60,24 @@ public class Printer {
 			file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
-			Error.addError(Error.e8);
-			new Error();
+			InputError.addError("er_file_create");
+			new InputError();
 			return null;
 		}
 		return file;
 	}
 	
 	private void write(String path, String[] data) {
-		PrintWriter writer = null;
+		PrintWriter writer;
 		try {
-			writer = new PrintWriter(path, "UTF-8");
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			writer = new PrintWriter(path, StandardCharsets.UTF_8);
+		} catch (IOException e) {
 			e.printStackTrace();
-			Error.addError(Error.e9);
-			new Error();
+			InputError.addError("er_file_write");
+			new InputError();
 			return;
 		}
-		for(int i = 0; i < data.length; i++) writer.write(data[i] + "\n");
+        for (String datum : data) writer.write(datum + "\n");
 		writer.close();
 	}
 
