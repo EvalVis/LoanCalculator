@@ -1,4 +1,4 @@
-#Loan Calculator
+# Loan Calculator
 
 Software for calculating linear and anuity loans.
 
